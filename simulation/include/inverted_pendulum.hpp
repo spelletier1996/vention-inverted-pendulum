@@ -1,0 +1,8 @@
+#ifndef INCLUDE_INVERTED_PENDULUM_HPP
+#define INCLUDE_INVERTED_PENDULUM_HPP
+
+//TEMP
+class InvertedPendulum {
+};
+
+#endif  // INCLUDE_INVERTED_PENDULUM_HPP
