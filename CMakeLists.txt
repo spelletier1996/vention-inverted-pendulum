@@ -17,6 +17,7 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 find_package(Boost REQUIRED)
 
 add_subdirectory(simulation)
+add_subdirectory(utils)
 
 # Set include directory
 set(${PROJECT}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -27,7 +28,7 @@ include_directories(${PROJECT}_INCLUDE_DIR)
 
 # add the executable and link libraries
 add_executable(${PROJECT_NAME} ${${PROJECT}_SOURCE_DIR}/main.cpp)
-target_link_libraries(${PROJECT_NAME} Boost::boost simulation)
+target_link_libraries(${PROJECT_NAME} Boost::boost simulation utils sfml-graphics sfml-window sfml-system)
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 
