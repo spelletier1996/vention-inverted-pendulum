@@ -34,12 +34,26 @@ Will create a basic SIM in c++
  Equations of motion will be based on: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4444887
  They use the FBD approach which I am more familiar with then the energy approach shown here https://underactuated.csail.mit.edu/acrobot.html
  Another example with force of wind accounted for https://www.digitalxplore.org/up_proc/pdf/19-138138560665-69.pdf
+ Example of a simulation to borrow from https://gitlab.com/carlossvg/inverted_pendulum_sim
 
- 
+ In terms of custom derivation of equations and going through the math the time and chance of error are very high, using an existing simulation seems like the safer approach as long as we are transparent about that fact
 
+ IPC methods to consider
+- Sockets
+- shared memory (boost interprocess)
+- DDS
+- Message Queues
 
+Leaning towards Sockets as that would simulate the real world connection between the physical machine and our controller
+would also be more similar to a can socket connection
+Shared memory and msg queues are faster and better suited to large data but that doesnt really apply to our situation
 
+The simulator will be broken into three components the simulation loop running at X frequency
+A listener to a TCP port for updating the input variables F and D
+A thread that is sending the state information at 100hz to the controller
 
+Alternative approach would be to use boost interprocess and message queues or shared memory, would make the code and approach a lot more managable
+The approach would be very similar to the above
 
 
 ##### Controller
