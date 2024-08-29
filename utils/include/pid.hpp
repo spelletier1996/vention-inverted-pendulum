@@ -25,7 +25,7 @@ public:
   //!@brief Returns the total calculated error based on the last update
   //!@return const double
   //!
-  [[nodiscard]] auto TotalError() -> const double {
+  [[nodiscard]] auto TotalError() -> double {
     double total = Kp_ * p_error_ + Ki_ * i_error_ + Kd_ * d_error_;
     return total; // Add your total error calc here!
   }

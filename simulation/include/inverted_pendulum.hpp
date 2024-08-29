@@ -60,17 +60,17 @@ public:
   }
 
 private:
-  const double M_;     // mass of the base
-  const double m_;     // mass of the pendulum
-  const double J_;     // moment of inertia of the pendulum
-  const double l_;     // distance from the base to the pendulum
-  const double c_;     // coefficient of viscous friction (base)
-  const double gamma_; // coefficient of viscous friction (pendulum)
-  const double g_;     // acceleration due to gravity
-  const double M_t_;   // total mass
-  const double J_t_;   // total inertia
+  const double M_;     // mass of the base (Kg)
+  const double m_;     // mass of the pendulum (Kg)
+  const double J_;     // moment of inertia of the pendulum (Kg m^2)
+  const double l_;     // distance from the base to the pendulum (m)
+  const double c_;     // coefficient of viscous friction (base) 
+  const double gamma_; // coefficient of viscous friction (pendulum) 
+  const double g_;     // acceleration due to gravity (m/s^2)
+  const double M_t_;   // total mass (Kg)
+  const double J_t_;   // total inertia (Kg m^2)
 
-  Eigen::VectorXd x_;     // state vector
+  Eigen::VectorXd x_;     // state vector (position, angle, velocity, angular velocity)
   Eigen::VectorXd x_dot_; // state vector derivative
 };
 

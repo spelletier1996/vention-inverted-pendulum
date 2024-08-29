@@ -55,6 +55,8 @@ A thread that is sending the state information at 100hz to the controller
 Alternative approach would be to use boost interprocess and message queues or shared memory, would make the code and approach a lot more managable
 The approach would be very similar to the above
 
+The correct approach in this case is a communication method such as sockets that allow for not just inter process but inter system communication
+I took a shared_memory approach as its something I am more familiar with but in a real world situation i would use a network implementation
 
 ##### Controller
 Controller method? PI, PID, Something else?
