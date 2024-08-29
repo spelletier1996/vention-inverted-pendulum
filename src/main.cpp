@@ -7,6 +7,7 @@
 #include <chrono>
 #include <memory>
 #include <thread>
+#include <network.hpp>
 
 double to_radians(double degrees) { return (degrees * (M_PI / 180.0F)); }
 
@@ -32,43 +33,44 @@ int main() {
 
   auto x_pid = std::make_shared<utils::PID>(20, 0, 0);
 
-  // Design LQR controller
-  // LQR optimal;
-  // ptr->Linearize();
-  // optimal.A_ = ptr->A_;
-  // optimal.B_ = ptr->B_;
-  // optimal.Q_ = Eigen::MatrixXd::Identity(4, 4);
-  // optimal.Q_(0, 0) = 10;
-  // optimal.R_ = Eigen::MatrixXd::Identity(1, 1);
-  // optimal.Compute();
-
-  bool pid = true;
-
   sim->Restart(x_0);
 
   double control_velocity = 1.0;
 
-  std::thread sim_thread([sim, &control_velocity]() mutable {
-    auto velocity_controller = std::make_shared<utils::PID>(50, 20, 0);
+  std::thread sim_thread([sim]() mutable {
+    auto velocity_controller = std::make_shared<utils::PID>(10, 1, 0);
+      // double time = 0.0;
+      double disturbance = 0;
+    utils::Client<double> control_velocity("control_velocity");
     while (true) {
       double u = 0;
-      double disturbance = 0;
       double present_velocity = sim->State()(2);
-      auto control_point = control_velocity - present_velocity;
+      auto control_point = control_velocity.Read() - present_velocity;
       velocity_controller->UpdateError(.001, control_point);
       u = velocity_controller->TotalError();
 
+      // printf("test_variable = %f\n", test_client.Read());
+
+      // time = time + .001;
+      // if (time > 5 && time < 5.1) {
+      //   disturbance = 10;
+      // }else disturbance = 0;
+
       sim->Update(.001, u, disturbance);
-      printf("u = %f\n", u);
-      printf("present_velocity = %f\n", present_velocity);
-      printf("control_velocity = %f\n", control_velocity);
+      // printf("u = %f\n", u);
+      // printf("present_velocity = %f\n", present_velocity);
+      // printf("control_velocity = %f\n", control_velocity);
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
   });
 
   std::thread control_thread([sim, &control_velocity]() mutable {
-    auto angle_controller = std::make_shared<utils::PID>(100, 50, 50);
-    auto position_controller = std::make_shared<utils::PID>(20, 5, 1);
+    auto angle_controller = std::make_shared<utils::PID>(400, 10, 10);
+    // auto position_controller = std::make_shared<utils::PID>(10, 5, 1);
+    auto position_controller = std::make_shared<utils::PID>(50, 15, 5);
+
+    utils::Server<double> test("control_velocity");
+
     while (true) {
 
       // should be sent a different way (IPC)
@@ -76,22 +78,26 @@ int main() {
       double angle = sim->State()(1);
 
       angle_controller->UpdateError(.01, 0.0 - angle);
-      auto angle_error = angle_controller->TotalError();
 
       auto position_error = 0 - position;
       position_controller->UpdateError(.01, position_error);
 
-      control_velocity =
-          angle_controller->TotalError() - position_controller->TotalError();
+      // control_velocity = position_controller->TotalError();
+      control_velocity = angle_controller->TotalError() - position_controller->TotalError();
+
+      test.Write(control_velocity);
+
+      // printf("angle_error = %f\n", angle_controller->TotalError());
+      // printf("position_error = %f\n", position_controller->TotalError());
+      // printf("control_velocity = %f\n", control_velocity);
 
       // position_controller->UpdateError(.01, position -
       // angle_controller->TotalError());
 
       // control_velocity =  position_controller->TotalError();
 
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   });
 
   std::thread hmi_thread([sim, theta_0]() {
@@ -169,70 +175,5 @@ int main() {
   });
 
   hmi_thread.join();
-
-  // while (window.isOpen()) {
-  //   sf::Event event;
-  //   while (window.pollEvent(event)) {
-  //     switch (event.type) {
-  //     case sf::Event::Closed:
-  //       window.close();
-  //       break;
-  //     }
-  //   }
-
-    // Update the simulation
-    // sf::Time elapsed = clock.getElapsedTime();
-    // const float time = elapsed.asSeconds();
-    // const std::string msg = std::to_string(time);
-    // text.setString("Time   " + msg.substr(0, msg.find('.') + 2));
-    // const std::string action = pid ? "Action PID" : "Action LQR";
-    // type.setString(action);
-    // if (time < 20) {
-    //   double u = 0;
-
-    //   double position = ptr->State()(0);
-    //   double angle = ptr->State()(1);
-    //   double velocity = ptr->State()(2);
-    //   double position_error = 0.0 - angle;
-    //   x_pid->UpdateError(.001, position_error);
-    //   double error = x_pid->TotalError() - velocity;
-    //   c_ptr->UpdateError(.001, error);
-    //   // u = c_ptr->TotalError() - x_pid->TotalError();
-    //   u = c_ptr->TotalError();
-
-    //   ptr->Update(.001, u, 0);
-    //   printf("u = %f\n", u);
-    //   printf("velocity = %f\n", velocity);
-    // } else {
-    //   // delete ptr;
-    //   // ptr = new InvertedPendulum(x_0);
-    //   ptr->Restart();
-    //   clock.restart();
-    //   pid = (pid) ? false : true;
-    // }
-
-    // Eigen::VectorXd x = sim->State();
-
-    // // Update SFML drawings
-    // cart.setPosition(320.0F + 100 * x(0), 240.0F);
-    // pole.setPosition(320.0F + 100 * x(0), 240.0F);
-    // pole.setRotation(to_degrees(-x(1)));
-
-    // window.clear(sf::Color::White);
-    // window.draw(track);
-    // window.draw(cart);
-    // window.draw(pole);
-    // window.draw(text);
-    // window.draw(type);
-    // window.display();
-
-    // auto currentTime = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsedTime = currentTime - prevTime;
-    // double frequency = 1.0 / elapsedTime.count();
-    // prevTime = currentTime;
-
-    // std::cout << ": Frequency = " << frequency << " Hz" << std::endl;
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    return 0;
+  return 0;
   }
