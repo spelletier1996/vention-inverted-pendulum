@@ -39,7 +39,7 @@ int main() {
 
   std::thread sim_thread([sim]() mutable {
     auto velocity_controller = std::make_shared<utils::PID>(10, 1, 0);
-      // double time = 0.0;
+      double time = 0.0;
       double disturbance = 0;
     utils::Client<double> control_velocity("control_velocity");
     while (true) {
@@ -51,10 +51,10 @@ int main() {
 
       // printf("test_variable = %f\n", test_client.Read());
 
-      // time = time + .001;
-      // if (time > 5 && time < 5.1) {
-      //   disturbance = 10;
-      // }else disturbance = 0;
+      time = time + .001;
+      if (time > 5 && time < 5.1) {
+        disturbance = 10;
+      }else disturbance = 0;
 
       sim->Update(.001, u, disturbance);
       // printf("u = %f\n", u);
@@ -65,9 +65,9 @@ int main() {
   });
 
   std::thread control_thread([sim, &control_velocity]() mutable {
-    auto angle_controller = std::make_shared<utils::PID>(400, 10, 10);
+    auto angle_controller = std::make_shared<utils::PID>(50, 0, 10);
     // auto position_controller = std::make_shared<utils::PID>(10, 5, 1);
-    auto position_controller = std::make_shared<utils::PID>(50, 15, 5);
+    auto position_controller = std::make_shared<utils::PID>(5, 0, 5);
 
     utils::Server<double> test("control_velocity");
 
@@ -77,10 +77,11 @@ int main() {
       double position = sim->State()(0);
       double angle = sim->State()(1);
 
-      angle_controller->UpdateError(.01, 0.0 - angle);
-
       auto position_error = 0 - position;
+
       position_controller->UpdateError(.01, position_error);
+
+      angle_controller->UpdateError(.01, 0 - angle);
 
       // control_velocity = position_controller->TotalError();
       control_velocity = angle_controller->TotalError() - position_controller->TotalError();
@@ -88,7 +89,8 @@ int main() {
       test.Write(control_velocity);
 
       // printf("angle_error = %f\n", angle_controller->TotalError());
-      // printf("position_error = %f\n", position_controller->TotalError());
+      printf("position = %f\n", position);
+      printf("position_error = %f\n", position_controller->TotalError());
       // printf("control_velocity = %f\n", control_velocity);
 
       // position_controller->UpdateError(.01, position -
