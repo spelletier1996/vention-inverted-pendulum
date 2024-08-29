@@ -18,6 +18,7 @@ find_package(Boost REQUIRED)
 
 add_subdirectory(simulation)
 add_subdirectory(utils)
+add_subdirectory(imgui)
 
 # Set include directory
 set(${PROJECT}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -28,7 +29,7 @@ include_directories(${PROJECT}_INCLUDE_DIR)
 
 # add the executable and link libraries
 add_executable(${PROJECT_NAME} ${${PROJECT}_SOURCE_DIR}/main.cpp)
-target_link_libraries(${PROJECT_NAME} Boost::boost simulation utils sfml-graphics sfml-window sfml-system)
+target_link_libraries(${PROJECT_NAME} Boost::boost simulation utils sfml-graphics sfml-window sfml-system imgui_glfw)
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 
