@@ -34,7 +34,7 @@ This project is run in two parts and must be launched in order:
 
 ```./scripts/launch-hmi-v1.sh``` or ```./scripts/launch-hmi-v2.sh```
 
-#### Originality
+### Originality
 As this is meant as a take home exam I will list borrowed code here.
 
 The imgui setup code (hmi.hpp GlfwInit) was taked from examples.
