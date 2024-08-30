@@ -48,7 +48,7 @@ int main() {
 
   while (!terminate) {
 
-    // Check for reset signal
+    // Check for reset signal and reset the controller
     if (reset.Read()) {
       printf("\nResetting controller\n");
       position_controller->Reset(default_position_Kp, default_position_Ki,
@@ -64,8 +64,13 @@ int main() {
       settings.position_Kp = default_position_Kp;
       settings.position_Ki = default_position_Ki;
       settings.position_Kd = default_position_Kd;
+      state.position = 0;
+      state.angle = 0;
+      state.velocity = 0;
+      state.angular_velocity = 0;
       settings_server.Write(settings);
       command_server.Write(command);
+      state_server.Write(state);
       //Small delay to sync with sim
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       reset.Write(false);

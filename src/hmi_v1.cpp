@@ -89,21 +89,21 @@ int main() {
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
-    if (std::abs(state.position) > ((track_width/2) - 0.1)) {
+    ImGui::PushItemWidth(80.0f);
+    if (std::abs(state.position) > ((track_width / 2) - 0.1)) {
       ImU32 colour = ImColor(255, 50, 50, 255);
       ImGui::PushStyleColor(ImGuiCol_Button, colour);
       // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
       ImGui::Button("Position Warning");
-      ImGui::PopStyleColor(1);
 
     } else {
       ImU32 colour = ImColor(140, 200, 80, 200);
       ImGui::PushStyleColor(ImGuiCol_Button, colour);
       // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
       ImGui::Button("Position Good");
-      ImGui::PopStyleColor(1);
     }
-
+    ImGui::PopStyleColor(1);
+    ImGui::PopItemWidth();
     ///
 
     // Draw the options tab bar
