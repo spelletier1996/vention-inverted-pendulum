@@ -21,41 +21,23 @@ public:
   //!
   //!@brief Standard OpenGL setup for ImGui
   //! Taken from example project
-  //! I dont like it but for some reason a shared ptr cant be used
+  //! Id rather use a smart pointer but the ImGui functions require raw pointers
   //! @return int imgui setup status
   //!
   auto GlfwInit() -> GLFWwindow * {
-    // Create local variables
-    // Decide GL+GLSL versions
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char *glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-#elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
-    const char *glsl_version = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
-#else
     // GL 3.0 + GLSL 130
     const char *glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+
-    // only glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // 3.0+ only
-#endif
 
+    // Check if glfw was initialized
     if (!glfwInit()) {
       return nullptr;
     }
 
     // Create window with graphics context
-    GLFWwindow *window = glfwCreateWindow(
-        500, 500, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(400, 500, "Vention Inverted Pendulum",
+                                          nullptr, nullptr);
     if (window == nullptr)
       return nullptr;
     glfwMakeContextCurrent(window);
@@ -68,26 +50,26 @@ public:
     (void)io;
     io.ConfigFlags |=
         ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |=
-        ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-#ifdef __EMSCRIPTEN__
-    ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
-#endif
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     return window;
   }
 
-  void draw_pendulum(double cart_position, double pendulum_angle) {
-    static ImVec4 colf = ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
-    const ImU32 col = ImColor(colf);
+  //!
+  //!@brief Draws a pendulum to the center of the current window
+  //!@param cart_position
+  //!@param pendulum_angle current pendulum angle in radians
+  //!@param y_offset offset from the y center in pixels
+  //!
+  void draw_pendulum(double cart_position, double pendulum_angle,
+                     float y_offset = 0) {
+    const ImU32 col = ImColor(255, 50, 0, 255);
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
@@ -95,7 +77,7 @@ public:
     auto window_pos = ImGui::GetWindowPos();
 
     auto x_center = window_pos.x + window_size.x / 2;
-    auto y_center = window_pos.y + window_size.y / 2;
+    auto y_center = window_pos.y + window_size.y / 2 + y_offset;
 
     double line_thinkness = 2.0;
     double rect_size = 15.0;
