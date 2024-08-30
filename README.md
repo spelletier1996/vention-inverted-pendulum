@@ -25,13 +25,14 @@ Building is done using the script
 ```./scripts/build_compile.sh```
 
 ### Running
-This project is run in two parts
+This project is run in two parts and must be launched in order:
 1. Launch the backend (sim + controller first) using:
+
 ```./scripts/launch-backend.sh```
+
 2. Launch either HMI v1 or v2 using:
-```./scripts/launch-hmi-v1.sh```
-or
-```./scripts/launch-hmi-v2.sh```
+
+```./scripts/launch-hmi-v1.sh``` or ```./scripts/launch-hmi-v2.sh```
 
 #### Originality
 As this is meant as a take home exam I will list borrowed code here.
