@@ -21,7 +21,7 @@ int main() {
   const double p_0 = 0;
   const double theta_0 = 5;
   Eigen::VectorXd x_0(4);
-  x_0 << p_0, tools::to_radians(theta_0), 0, 0;
+  x_0 << p_0, tools::DegToRad(theta_0), 0, 0;
   InvertedPendulum simulator(x_0);
 
   // Create a PID controller to control the velocity
@@ -46,6 +46,13 @@ int main() {
     velocity_controller.UpdateError(.001, command.velocity - present_velocity);
     force_input = velocity_controller.TotalError();
     simulator.Update(.001, force_input, command.disturbance);
+
+    //Limit the position for simplicity
+    if (simulator.State()(0) > 10) {
+      simulator.Position(10);
+    } else if (simulator.State()(0) < -10) {
+      simulator.Position(-10);
+    }
 
     // update and write the new state
     state.position = simulator.State()(0);

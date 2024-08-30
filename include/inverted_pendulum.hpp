@@ -23,8 +23,8 @@ public:
         x_dot_(Eigen::VectorXd(4).setZero()) {}
 
   //!
-   //!@brief Constructs with default values and given initial conditions
-   //!@param x_0 
+  //!@brief Constructs with default values and given initial conditions
+  //!@param x_0
   //!
   InvertedPendulum(Eigen::VectorXd x_0)
       : InvertedPendulum(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, x_0) {}
@@ -49,6 +49,14 @@ public:
   //!
   [[nodiscard]] auto State() const -> Eigen::VectorXd { return x_; }
 
+  //!
+  //!@brief Simple position setter
+  //! Just for simplicity and testing purposes
+  //!@param position (m)
+  //!@return auto
+  //!
+  auto Position(double position) { x_(0) = position; }
+
   void Restart() {
     x_.setZero();
     Restart(x_);
@@ -60,17 +68,19 @@ public:
   }
 
 private:
-  const double M_;     // mass of the base (Kg)
-  const double m_;     // mass of the pendulum (Kg)
-  const double J_;     // moment of inertia of the pendulum (Kg m^2)
+  [[maybe_unused]] const double M_; // mass of the base (Kg)
+  const double m_;                  // mass of the pendulum (Kg)
+  [[maybe_unused]] const double
+      J_;              // moment of inertia of the pendulum (Kg m^2)
   const double l_;     // distance from the base to the pendulum (m)
-  const double c_;     // coefficient of viscous friction (base) 
-  const double gamma_; // coefficient of viscous friction (pendulum) 
+  const double c_;     // coefficient of viscous friction (base)
+  const double gamma_; // coefficient of viscous friction (pendulum)
   const double g_;     // acceleration due to gravity (m/s^2)
   const double M_t_;   // total mass (Kg)
   const double J_t_;   // total inertia (Kg m^2)
 
-  Eigen::VectorXd x_;     // state vector (position, angle, velocity, angular velocity)
+  Eigen::VectorXd
+      x_; // state vector (position, angle, velocity, angular velocity)
   Eigen::VectorXd x_dot_; // state vector derivative
 };
 
