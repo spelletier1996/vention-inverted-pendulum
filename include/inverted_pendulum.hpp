@@ -1,7 +1,7 @@
 #ifndef SRC_INVERTED_PENDULUM_HPP
 #define SRC_INVERTED_PENDULUM_HPP
 
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 class InvertedPendulum {
 public:

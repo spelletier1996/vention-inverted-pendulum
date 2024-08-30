@@ -13,6 +13,28 @@
 
 namespace utils {
 
+//! Data structures for convinient interprocess communicaiton
+struct SimState {
+  double position;
+  double angle;
+  double velocity;
+  double angular_velocity;
+};
+
+struct SimCommand {
+  double velocity;
+  double disturbance;
+};
+
+struct ControllerSettings {
+  double position_Kp;
+  double position_Ki;
+  double position_Kd;
+  double angle_Kp;
+  double angle_Ki;
+  double angle_Kd;
+};
+
 //!
 //!@brief Simple mock network class using shared memory
 //! Thread safe

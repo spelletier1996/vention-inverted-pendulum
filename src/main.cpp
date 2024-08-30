@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "Eigen/Dense"
 #include "imgui.h"
 #include "inverted_pendulum.hpp"
 #include "pid.hpp"
