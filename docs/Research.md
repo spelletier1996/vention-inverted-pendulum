@@ -55,5 +55,6 @@ dθ_dot/dt = (-m * g * sin(θ) - m * x_ddot * cos(θ) + D) / (m * l)
       (J_t_ * (M_t_ / m_) - m_ * (l_ * c_t) * (l_ * c_t));
 
 
+      xhost +local:*
 
       docker run -it --ipc=host -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY my-image

@@ -20,7 +20,17 @@ Feedback controller to keep upright (and bring position to 0)
 
 Simple GUI that allows visuilization of the state of the turbine and allows for changing gain params of controller
 
+### Questions
+
+- What IPC will we use
+- What GUI library
+- ...
+
 ##### Sim
+
+The simulation can be approached in a few different ways from directly diriving the equations of motion ourselves to using an existing simulator online
+I feel that the ideal solution here would be to model the system in matlab and then extract the plant from their but I dont currenly have access nor the time to do so. The alternative is to find an existing model that we can borrow
+
 What will be our model
 What IPC will we use to comm with controller
 How will we model the disturbance

@@ -1,0 +1,41 @@
+services:
+  controller:
+    build:
+      context: .
+    command: bash -c /build/controller  # Replace with your desired command
+    tty: true
+    ipc: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+
+  simulator:
+    build:
+      context: .
+    command: bash -c /build/simulator  # Replace with your desired command
+    tty: true
+    ipc: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+    depends_on:
+      - controller
+
+  hmi:
+    build:
+      context: .
+    command: bash -c /build/hmi_v2  # Replace with your desired command
+    tty: true
+    ipc: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp:/tmp
+      - /dev/shm:/dev/shm
+    environment:
+      - DISPLAY=$DISPLAY
+    depends_on:
+      - controller
+      - simulator
+    

@@ -1,5 +1,6 @@
 #include "pid.hpp"
 #include <chrono>
+#include <iostream>
 #include <memory>
 #include <network.hpp>
 #include <signal.h>
@@ -9,7 +10,7 @@
 
 bool terminate = false;
 
-//default gains for a stable system
+// default gains for a stable system
 constexpr double default_position_Kp = 5;
 constexpr double default_position_Ki = 0;
 constexpr double default_position_Kd = 5;
@@ -47,14 +48,14 @@ int main() {
   printf("\nStarting controller\n");
 
   while (!terminate) {
-
+    auto start = std::chrono::high_resolution_clock::now();
     // Check for reset signal and reset the controller
     if (reset.Read()) {
       printf("\nResetting controller\n");
       position_controller->Reset(default_position_Kp, default_position_Ki,
-                                     default_position_Kd);
-      angle_controller->Reset(default_angle_Kp,
-                                     default_angle_Ki,    default_angle_Kd);
+                                 default_position_Kd);
+      angle_controller->Reset(default_angle_Kp, default_angle_Ki,
+                              default_angle_Kd);
       command.velocity = 0;
       command.disturbance = 0;
       command.reset = false;
@@ -71,7 +72,7 @@ int main() {
       settings_server.Write(settings);
       command_server.Write(command);
       state_server.Write(state);
-      //Small delay to sync with sim
+      // Small delay to sync with sim
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       reset.Write(false);
     }
@@ -102,6 +103,10 @@ int main() {
     command_server.Write(command);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printf("\rController loop time: %ld ms", elapsed.count());
   }
   printf("\nExiting controller\n");
   return 0;

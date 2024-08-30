@@ -37,7 +37,7 @@ int main() {
   double force_input = 0;
 
   while (!terminate) {
-
+    auto start = std::chrono::high_resolution_clock::now();
     //Reset the sim and all related variables
     if (reset.Read()) {
       printf("\nResetting Simulator\n");
@@ -81,6 +81,9 @@ int main() {
 
     // Run the sim at 1000hz
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printf("\rSim loop time: %ld ms", elapsed.count());
   }
 
   printf("\nExiting sim\n");
