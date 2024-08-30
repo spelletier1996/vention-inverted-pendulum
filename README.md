@@ -20,11 +20,19 @@ The following dependencies are required to run the full sim + controller + HMI
 Dependencies can be installed using
 ```./scripts/install-dependencies.sh```
 
-### Building
+### Docker
+With the use of docker and docker compose the entire system can be run containerized with:
+
+```docker compose up```
+
+This will launch the entire system including V2 of the HMI
+
+### Native
+##### Building
 Building is done using the script
 ```./scripts/build_compile.sh```
 
-### Running
+##### Running
 This project is run in two parts and must be launched in order:
 1. Launch the backend (sim + controller first) using:
 
