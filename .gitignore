@@ -22,6 +22,7 @@ build/*
 # Fortran module files
 *.mod
 *.smod
+*.ini
 
 # Compiled Static libraries
 *.lai
