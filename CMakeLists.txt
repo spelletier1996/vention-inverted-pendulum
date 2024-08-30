@@ -40,6 +40,11 @@ target_link_libraries(hmi_v1 Boost::boost imgui_glfw Eigen3::Eigen)
 target_include_directories(hmi_v1 PUBLIC ${${PROJECT}_INCLUDE_DIR})
 install(TARGETS hmi_v1 DESTINATION bin)
 
+add_executable(hmi_v2 ${${PROJECT}_SOURCE_DIR}/hmi_v2.cpp)
+target_link_libraries(hmi_v2 Boost::boost imgui_glfw Eigen3::Eigen)
+target_include_directories(hmi_v2 PUBLIC ${${PROJECT}_INCLUDE_DIR})
+install(TARGETS hmi_v2 DESTINATION bin)
+
 
 
 

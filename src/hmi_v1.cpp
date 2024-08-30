@@ -35,7 +35,6 @@ int main() {
 
   float disturbance = 0.0f;
   settings = settings_server.Read();
-  float track_width = 5.0f;
 
   // Main loop
   while (!terminate) {
@@ -83,29 +82,6 @@ int main() {
     ImGui::Value("Angular Velocity",
                  static_cast<float>(state.angular_velocity));
 
-    /// V2
-    ImGui::PushItemWidth(80.0f);
-    ImGui::InputFloat("Track Width", &track_width);
-    ImGui::PopItemWidth();
-    ImGui::SameLine();
-
-    ImGui::PushItemWidth(80.0f);
-    if (std::abs(state.position) > ((track_width / 2) - 0.1)) {
-      ImU32 colour = ImColor(255, 50, 50, 255);
-      ImGui::PushStyleColor(ImGuiCol_Button, colour);
-      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
-      ImGui::Button("Position Warning");
-
-    } else {
-      ImU32 colour = ImColor(140, 200, 80, 200);
-      ImGui::PushStyleColor(ImGuiCol_Button, colour);
-      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
-      ImGui::Button("Position Good");
-    }
-    ImGui::PopStyleColor(1);
-    ImGui::PopItemWidth();
-    ///
-
     // Draw the options tab bar
     if (ImGui::BeginTabBar("Options")) {
       if (ImGui::BeginTabItem("Controls")) {
@@ -130,27 +106,6 @@ int main() {
       if (ImGui::BeginTabItem("PID Settings")) {
 
         ImGui::Text("Controller options coming soon...");
-
-        /// V2
-        ImGui::PushItemWidth(80.0f);
-        ImGui::Text("Position Controller");
-        ImGui::InputDouble("P:Kp", &settings.position_Kp);
-        ImGui::SameLine();
-        ImGui::InputDouble("P:Ki", &settings.position_Ki);
-        ImGui::SameLine();
-        ImGui::InputDouble("P:Kd", &settings.position_Kd);
-        ImGui::Text("Angle Controller");
-        ImGui::InputDouble("A:Kp", &settings.angle_Kp);
-        ImGui::SameLine();
-        ImGui::InputDouble("A:Ki", &settings.angle_Ki);
-        ImGui::SameLine();
-        ImGui::InputDouble("A:Kd", &settings.angle_Kd);
-        ImGui::PopItemWidth();
-
-        if (ImGui::Button("Set Gains")) {
-          settings_server.Write(settings);
-        }
-        ///
 
         ImGui::EndTabItem();
       }
