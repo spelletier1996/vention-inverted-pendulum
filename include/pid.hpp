@@ -53,6 +53,13 @@ public:
     d_error_ = 0.0;
   }
 
+  auto Reset(double kp, double ki, double kd) {
+    Kp_ = kp;
+    Ki_ = ki;
+    Kd_ = kd;
+    Reset();
+  }
+
 private:
   double p_error_{0.0}; // Proportional error
   double i_error_{0.0}; // Integral error

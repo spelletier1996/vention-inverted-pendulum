@@ -5,108 +5,100 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <cmath>
-#include <memory>
 
 #define GL_SILENCE_DEPRECATION
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>
 
-class HMI {
+namespace hmi {
 
-public:
-  HMI() = default;
+//!
+//!@brief Standard OpenGL setup for ImGui
+//! Taken from example project
+//! Id rather use a smart pointer but the ImGui functions require raw pointers
+//! @return int imgui setup status
+//!
+inline auto GlfwInit() -> GLFWwindow * {
+  // GL 3.0 + GLSL 130
+  const char *glsl_version = "#version 130";
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-  //!
-  //!@brief Standard OpenGL setup for ImGui
-  //! Taken from example project
-  //! Id rather use a smart pointer but the ImGui functions require raw pointers
-  //! @return int imgui setup status
-  //!
-  auto GlfwInit() -> GLFWwindow * {
-    // GL 3.0 + GLSL 130
-    const char *glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-
-    // Check if glfw was initialized
-    if (!glfwInit()) {
-      return nullptr;
-    }
-
-    // Create window with graphics context
-    GLFWwindow *window = glfwCreateWindow(400, 500, "Vention Inverted Pendulum",
-                                          nullptr, nullptr);
-    if (window == nullptr)
-      return nullptr;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
-
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    io.ConfigFlags |=
-        ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    return window;
+  // Check if glfw was initialized
+  if (!glfwInit()) {
+    return nullptr;
   }
 
-  //!
-  //!@brief Draws a pendulum to the center of the current window
-  //!@param cart_position
-  //!@param pendulum_angle current pendulum angle in radians
-  //!@param y_offset offset from the y center in pixels
-  //!
-  void draw_pendulum(double cart_position, double pendulum_angle,
-                     float y_offset = 0) {
-    const ImU32 col = ImColor(255, 50, 0, 255);
+  // Create window with graphics context
+  GLFWwindow *window =
+      glfwCreateWindow(400, 400, "Vention Inverted Pendulum", nullptr, nullptr);
+  if (window == nullptr)
+    return nullptr;
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(1); // Enable vsync
 
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  io.ConfigFlags |=
+      ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 
-    auto window_size = ImGui::GetWindowSize();
-    auto window_pos = ImGui::GetWindowPos();
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
 
-    auto x_center = window_pos.x + window_size.x / 2;
-    auto y_center = window_pos.y + window_size.y / 2 + y_offset;
+  // Setup Platform/Renderer backends
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init(glsl_version);
 
-    double line_thinkness = 2.0;
-    double rect_size = 15.0;
-    // cart
-    draw_list->AddRect(
-        ImVec2(x_center + rect_size + cart_position, y_center + rect_size),
-        ImVec2(x_center - rect_size + cart_position, y_center - rect_size), col,
-        0.0f, ImDrawFlags_None, line_thinkness);
+  return window;
+}
 
-    // track
-    draw_list->AddLine({0, y_center}, {2 * x_center, y_center}, col,
-                       line_thinkness);
+//!
+//!@brief Draws a pendulum to the center of the current window
+//!@param cart_position
+//!@param pendulum_angle current pendulum angle in radians
+//!@param y_offset offset from the y center in pixels
+//!
+inline void draw_pendulum(double cart_position, double pendulum_angle,
+                   float y_offset = 0) {
+  const ImU32 col = ImColor(255, 50, 0, 255);
 
-    double stick_length = 50.0;
-    // stick
-    draw_list->AddLine(
-        ImVec2(x_center + cart_position, y_center),
-        ImVec2(x_center + cart_position -
-                   std::sin(pendulum_angle) * stick_length,
-               y_center - std::cos(pendulum_angle) * stick_length),
-        col, 1.0f);
+  ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
-    // pend mass
-    draw_list->AddCircle(
-        ImVec2(x_center + cart_position -
-                   std::sin(pendulum_angle) * stick_length,
-               y_center - std::cos(pendulum_angle) * stick_length),
-        5.0f, col);
-  }
-};
+  auto window_size = ImGui::GetWindowSize();
+  auto window_pos = ImGui::GetWindowPos();
 
-#endif // INCLUDE_HMI_HPP
+  auto x_center = window_pos.x + window_size.x / 2;
+  auto y_center = window_pos.y + window_size.y / 2 + y_offset;
+
+  double line_thinkness = 2.0;
+  double rect_size = 15.0;
+  // cart
+  draw_list->AddRect(
+      ImVec2(x_center + rect_size + cart_position, y_center + rect_size),
+      ImVec2(x_center - rect_size + cart_position, y_center - rect_size), col,
+      0.0f, ImDrawFlags_None, line_thinkness);
+
+  // track
+  draw_list->AddLine({0, y_center}, {2 * x_center, y_center}, col,
+                     line_thinkness);
+
+  double stick_length = 50.0;
+  // stick
+  draw_list->AddLine(
+      ImVec2(x_center + cart_position, y_center),
+      ImVec2(x_center + cart_position - std::sin(pendulum_angle) * stick_length,
+             y_center - std::cos(pendulum_angle) * stick_length),
+      col, 1.0f);
+
+  // pend mass
+  draw_list->AddCircle(
+      ImVec2(x_center + cart_position - std::sin(pendulum_angle) * stick_length,
+             y_center - std::cos(pendulum_angle) * stick_length),
+      5.0f, col);
+}
+
+} // namespace hmi
+
+#endif  // INCLUDE_HMI_HPP

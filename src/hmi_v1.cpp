@@ -1,4 +1,3 @@
-#include <chrono>
 #include <cmath>
 #include <network.hpp>
 #include <signal.h>
@@ -25,10 +24,9 @@ int main() {
   utils::Client<utils::SimCommand> command_server("sim_command");
   utils::Client<utils::ControllerSettings> settings_server(
       "controller_settings");
+  utils::Client<bool> reset("reset_signal");
 
-  HMI hmi;
-
-  GLFWwindow *window = hmi.GlfwInit();
+  GLFWwindow *window = hmi::GlfwInit();
 
   if (window == nullptr) {
     printf("Failed to initialize GLFW\n");
@@ -36,9 +34,12 @@ int main() {
   }
 
   float disturbance = 0.0f;
+  settings = settings_server.Read();
+  float track_width = 5.0f;
 
   // Main loop
   while (!terminate) {
+    // Poll and handle events (inputs, window resize, etc.)
     glfwPollEvents();
     if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {
       ImGui_ImplGlfw_Sleep(10);
@@ -48,7 +49,6 @@ int main() {
     // update the shared memory objects
     state = state_server.Read();
     command = command_server.Read();
-    settings = settings_server.Read();
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -56,75 +56,110 @@ int main() {
     ImGui::NewFrame();
 
     // Draw the primary HMI window
-    {
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 
-      ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+    const ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
 
-      const ImGuiViewport *viewport = ImGui::GetMainViewport();
-      ImGui::SetNextWindowPos(viewport->WorkPos);
-      ImGui::SetNextWindowSize(viewport->WorkSize);
-      ImGui::SetNextWindowViewport(viewport->ID);
+    windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    windowFlags |=
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-      windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                     ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-      windowFlags |=
-          ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    ImGui::Begin("simulation view", nullptr, windowFlags);
 
-      ImGui::Begin("simulation view", nullptr, windowFlags);
+    // Draw the pendulum animation
+    ImVec2 window_size = ImGui::GetWindowSize();
+    double scaled_position =
+        ((state.position + 10) / 20 * window_size.x) - window_size.x / 2;
+    hmi::draw_pendulum(scaled_position, state.angle, 100);
 
-      auto window_size = ImGui::GetWindowSize();
+    // Publish the state variables
+    ImGui::Value("Position", static_cast<float>(state.position));
+    ImGui::Value("Velocity", static_cast<float>(state.velocity));
+    ImGui::Value("Angle", static_cast<float>(tools::RadToDeg(state.angle)));
+    ImGui::Value("Angular Velocity",
+                 static_cast<float>(state.angular_velocity));
 
-      auto scaled_position =
-          ((state.position + 10) / 20 * window_size.x) - window_size.x / 2;
+    /// V2
+    ImGui::PushItemWidth(80.0f);
+    ImGui::InputFloat("Track Width", &track_width);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
 
-      hmi.draw_pendulum(scaled_position, state.angle, 50);
+    if (std::abs(state.position) > ((track_width/2) - 0.1)) {
+      ImU32 colour = ImColor(255, 50, 50, 255);
+      ImGui::PushStyleColor(ImGuiCol_Button, colour);
+      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
+      ImGui::Button("Position Warning");
+      ImGui::PopStyleColor(1);
 
-      ImGui::Value("cart position", static_cast<float>(state.position));
-      ImGui::Value("pendulum angle",
-                   static_cast<float>(tools::RadToDeg(state.angle)));
-      ImGui::Value("cart velocity", static_cast<float>(state.velocity));
-      ImGui::Value("pendulum angular velocity",
-                   static_cast<float>(state.angular_velocity));
-
-      if (ImGui::BeginTabBar("Options")) {
-        if (ImGui::BeginTabItem("Sim Controls")) {
-
-          ImGui::Button("Send");
-
-          if (ImGui::IsItemActive()) {
-            command.disturbance = disturbance;
-          } else {
-            command.disturbance = 0;
-          }
-
-          ImGui::SameLine();
-          ImGui::SliderFloat("Disturbance", &disturbance, -100, 100);
-
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Controller Options")) {
-
-          ImGui::Text("Controller options coming soon...");
-
-          ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-      }
-
-      ImGui::End();
+    } else {
+      ImU32 colour = ImColor(140, 200, 80, 200);
+      ImGui::PushStyleColor(ImGuiCol_Button, colour);
+      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
+      ImGui::Button("Position Good");
+      ImGui::PopStyleColor(1);
     }
 
-    // {
+    ///
 
-    //   ImGui::Begin("simulation visualization", nullptr,
-    //                ImGuiWindowFlags_NoCollapse);
+    // Draw the options tab bar
+    if (ImGui::BeginTabBar("Options")) {
+      if (ImGui::BeginTabItem("Controls")) {
 
-    //   ImGui::SetWindowSize(ImVec2(500, 500));
+        // Publish disturbance while pressed
+        ImGui::Button("Send");
+        if (ImGui::IsItemActive()) {
+          command.disturbance = disturbance;
+        } else {
+          command.disturbance = 0;
+        }
+        ImGui::SameLine();
+        ImGui::SliderFloat("Disturbance", &disturbance, -100, 100);
 
-    //   ImGui::End();
-    // }
+        // Restart the sim and controllers
+        if (ImGui::Button("Restart Simulator")) {
+          reset.Write(true);
+        }
 
-    // Rendering
+        ImGui::EndTabItem();
+      }
+      if (ImGui::BeginTabItem("PID Settings")) {
+
+        ImGui::Text("Controller options coming soon...");
+
+        /// V2
+        ImGui::PushItemWidth(80.0f);
+        ImGui::Text("Position Controller");
+        ImGui::InputDouble("P:Kp", &settings.position_Kp);
+        ImGui::SameLine();
+        ImGui::InputDouble("P:Ki", &settings.position_Ki);
+        ImGui::SameLine();
+        ImGui::InputDouble("P:Kd", &settings.position_Kd);
+        ImGui::Text("Angle Controller");
+        ImGui::InputDouble("A:Kp", &settings.angle_Kp);
+        ImGui::SameLine();
+        ImGui::InputDouble("A:Ki", &settings.angle_Ki);
+        ImGui::SameLine();
+        ImGui::InputDouble("A:Kd", &settings.angle_Kd);
+        ImGui::PopItemWidth();
+
+        if (ImGui::Button("Set Gains")) {
+          settings_server.Write(settings);
+        }
+        ///
+
+        ImGui::EndTabItem();
+      }
+      ImGui::EndTabBar();
+    }
+
+    ImGui::End();
+
+    // Render the window drawn above
     ImGui::Render();
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -134,15 +169,11 @@ int main() {
                  clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
     glfwSwapBuffers(window);
 
+    // Write updated values to shared memory
     command_server.Write(command);
-    settings_server.Write(settings);
   }
-#ifdef __EMSCRIPTEN__
-  EMSCRIPTEN_MAINLOOP_END;
-#endif
 
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();

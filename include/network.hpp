@@ -28,7 +28,6 @@ struct SimCommand {
 };
 
 struct ControllerSettings {
-  double reset;
   double position_Kp;
   double position_Ki;
   double position_Kd;
@@ -147,6 +146,6 @@ public:
   }
 };
 
-} // namespace network
+} // namespace utils
 
 #endif // INCLUDE_NETWORK_HPP

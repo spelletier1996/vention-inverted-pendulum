@@ -30,12 +30,30 @@ int main() {
   // Open the controllers shared memory objects
   utils::Client<utils::SimState> state_server("sim_state");
   utils::Client<utils::SimCommand> command_server("sim_command");
+  utils::Client<bool> reset("reset_signal");
 
   // Create local variables
   double present_velocity = 0;
   double force_input = 0;
 
   while (!terminate) {
+
+    //Reset the sim and all related variables
+    if (reset.Read()) {
+      printf("\nResetting Simulator\n");
+      simulator.Restart();
+      state.position = 0;
+      state.angle = 0;
+      state.velocity = 0;
+      state.angular_velocity = 0;
+      present_velocity = 0;
+      force_input = 0;
+      velocity_controller.Reset();
+      state_server.Write(state);
+      //small delay to sync with controller
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
     // Get the latest command from the controller
     command = command_server.Read();
 
