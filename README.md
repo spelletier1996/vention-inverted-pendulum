@@ -19,7 +19,7 @@ The following dependencies are required to run the full sim + controller + HMI
 
 ### Building
 ##### Native
-Their are two build options either ensure all dependencies are installed and then build using:
+There are two build options either ensure all dependencies are installed and then build using:
 
 ```
 mkdir build 
@@ -28,7 +28,7 @@ cmake ..
 make
 ```
 ##### Docker
-Alternatively the included Dockerfile can be used first build the image from the project root with
+Use the included docker container built with:
 
 ```docker build -t pendulum_sim .```
 
@@ -37,10 +37,10 @@ Alternatively the included Dockerfile can be used first build the image from the
 TODO: how to actually run needs to be finished
 
 #### Originality
-As this is meant as a take home exam here I will list which code I wrote vs borrowed from external sources, excluding dependencies already listed. If not mentioned chances are I wrote them myself.
+As this is meant as a take home exam I will list borrowed code here.
 
 The imgui setup code (hmi.hpp GlfwInit) was taked from examples.
 
 The inverted_pendulum.cpp was based on an existing project found [here](https://github.com/jasleon/Inverted-Pendulum) with the equations being modified and the overall code being updated to meet more modern C++ standards. 
 
-The controller code was also originally based on the above project but again updated to modern standards.
+The controller code was also originally based on the above project updated to modern standards.
