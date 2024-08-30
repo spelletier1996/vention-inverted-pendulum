@@ -13,9 +13,6 @@ void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 
 int main() {
   signal(SIGINT, SignalHandler);
-  // Create local objects to store shared memory
-  utils::SimState state;
-utils::ControllerSettings settings;
 
   // Open the controllers shared memory objects
   utils::Client<utils::SimState> state_server("sim_state");

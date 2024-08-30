@@ -13,9 +13,9 @@ void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 int main() {
   signal(SIGINT, SignalHandler);
   // Set initial conditions
-  utils::SimState state;
-  utils::SimCommand command;
-  utils::ControllerSettings settings;
+  utils::SimState state{0, 0, 0, 0};
+  utils::SimCommand command{0, 0, false};
+  utils::ControllerSettings settings{0, 5, 0, 5, 50, 0, 10};
   // Create the controllers with initial conditions
   auto angle_controller = std::make_shared<utils::PID>(50, 0, 10);
   auto position_controller = std::make_shared<utils::PID>(5, 0, 5);
@@ -27,6 +27,8 @@ int main() {
   utils::Server<utils::ControllerSettings> settings_server(
       "controller_settings");
 
+  printf("\nStarting controller\n");
+
   while (!terminate) {
 
     // Read all the shared memory objects
@@ -37,17 +39,13 @@ int main() {
 
     position_controller->UpdateError(.01, position_error);
 
-    angle_controller->UpdateError(.01,
-                                  0.0 - state.angle);
+    angle_controller->UpdateError(.01, 0.0 - state.angle);
 
     // control_velocity = position_controller->TotalError();
     command.velocity =
         angle_controller->TotalError() - position_controller->TotalError();
 
     command_server.Write(command);
-
-    printf("position = %f\n", state.position);
-    printf("position_error = %f\n", position_controller->TotalError());
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
