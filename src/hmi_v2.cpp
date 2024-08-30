@@ -172,6 +172,9 @@ int main() {
     glfwSwapBuffers(window);
 
     // Write updated values to shared memory
+    double saved_disturbance = command.disturbance;
+    command = command_server.Read();
+    command.disturbance = saved_disturbance;
     command_server.Write(command);
   }
 
