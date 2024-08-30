@@ -3,7 +3,6 @@
 void InvertedPendulum::Update(const double &dt, const double &cart_force,
                               const double &pendulum_disturbance) {
   // Recover state parameters
-  double x = x_(0);                // position of the base
   double theta = x_(1);            // angle of the pendulum
   double vx = x_(2);               // velocity of the base
   double omega = x_(3);            // angular rate of the pendulum

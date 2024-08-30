@@ -47,6 +47,12 @@ public:
   [[nodiscard]] auto DerivativeGain() const -> const double & { return Kd_; }
   auto DerivativeGain(double gain) { Kd_ = gain; }
 
+  auto Reset() {
+    p_error_ = 0.0;
+    i_error_ = 0.0;
+    d_error_ = 0.0;
+  }
+
 private:
   double p_error_{0.0}; // Proportional error
   double i_error_{0.0}; // Integral error

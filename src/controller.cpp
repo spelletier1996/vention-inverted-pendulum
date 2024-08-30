@@ -28,6 +28,7 @@ int main() {
       "controller_settings");
 
   while (!terminate) {
+
     // Read all the shared memory objects
     state = state_server.Read();
     settings = settings_server.Read();
@@ -36,7 +37,8 @@ int main() {
 
     position_controller->UpdateError(.01, position_error);
 
-    angle_controller->UpdateError(.01, 0 - state.angle);
+    angle_controller->UpdateError(.01,
+                                  0.0 - state.angle);
 
     // control_velocity = position_controller->TotalError();
     command.velocity =

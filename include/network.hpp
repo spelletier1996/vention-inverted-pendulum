@@ -13,7 +13,7 @@
 
 namespace utils {
 
-//! Data structures for convinient interprocess communicaiton
+//! Data structures for convinient interprocess communication
 struct SimState {
   double position;
   double angle;
@@ -24,9 +24,11 @@ struct SimState {
 struct SimCommand {
   double velocity;
   double disturbance;
+  bool reset;
 };
 
 struct ControllerSettings {
+  double reset;
   double position_Kp;
   double position_Ki;
   double position_Kd;
@@ -122,7 +124,7 @@ template <typename T> class Client : public SharedMemory<T> {
 public:
   Client(std::string name) : SharedMemory<T>(name) {
     // Attempt to open the shared memory object
-    int max_retries = 100;
+    int max_retries = 5;
     int retry_delay = 500;
     for (int i = 0; i < max_retries; ++i) {
       try {
