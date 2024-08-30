@@ -17,24 +17,21 @@ The following dependencies are required to run the full sim + controller + HMI
 - [cmake](https://cmake.org/) 
 - [clang](https://clang.llvm.org/) 
 
+Dependencies can be installed using
+```./scripts/install-dependencies.sh```
+
 ### Building
-##### Native
-There are two build options either ensure all dependencies are installed and then build using:
+Building is done using the script
+```./scripts/build_compile.sh```
 
-```
-mkdir build 
-cd ./build
-cmake ..
-make
-```
-##### Docker
-Use the included docker container built with:
-
-```docker build -t pendulum_sim .```
-
-#### Running
-
-TODO: how to actually run needs to be finished
+### Running
+This project is run in two parts
+1. Launch the backend (sim + controller first) using:
+```./scripts/launch-backend.sh```
+2. Launch either HMI v1 or v2 using:
+```./scripts/launch-hmi-v1.sh```
+or
+```./scripts/launch-hmi-v2.sh```
 
 #### Originality
 As this is meant as a take home exam I will list borrowed code here.
