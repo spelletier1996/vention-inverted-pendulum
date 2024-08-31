@@ -15,8 +15,8 @@ constexpr double default_position_Kp = 5;
 constexpr double default_position_Ki = 0;
 constexpr double default_position_Kd = 5;
 constexpr double default_angle_Kp = 50;
-constexpr double default_angle_Ki = 0;
-constexpr double default_angle_Kd = 10;
+constexpr double default_angle_Ki = 10;
+constexpr double default_angle_Kd = 20;
 
 void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 
