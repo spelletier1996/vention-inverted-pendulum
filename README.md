@@ -6,6 +6,14 @@ The solution is split into three seperate executables to somewhat emulate a real
 
 There are two HMI versions V1 and V2, As project requirements were updated after the initial version a second version with added controls and warnings was implemented.
 
+<p align=center>
+  <img src="docs/images/hmi-screenshot.png"/>
+</p>
+
+<p align="center">
+    HMI Interface
+</p>
+
 ### Dependencies
 The following dependencies are required to run the full sim + controller + HMI
 
