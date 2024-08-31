@@ -26,7 +26,7 @@ Simple GUI that allows visuilization of the state of the turbine and allows for 
 - What GUI library
 - ...
 
-##### Sim
+##### Notes
 
 The simulation can be approached in a few different ways from directly diriving the equations of motion ourselves to using an existing simulator online
 I feel that the ideal solution here would be to model the system in matlab and then extract the plant from their but I dont currenly have access nor the time to do so. The alternative is to find an existing model that we can borrow
@@ -67,10 +67,3 @@ The approach would be very similar to the above
 
 The correct approach in this case is a communication method such as sockets that allow for not just inter process but inter system communication
 I took a shared_memory approach as its something I am more familiar with but in a real world situation i would use a network implementation
-
-##### Controller
-Controller method? PI, PID, Something else?
-IPC for providing an API to the GUI
-##### Gui
-Select a simple GUI front end (imgui??)
-Decide on display method graph vs animation?
