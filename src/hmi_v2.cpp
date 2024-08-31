@@ -38,7 +38,7 @@ int main() {
   float track_width = 5.0f;
 
   // Main loop
-  while (!terminate) {
+  while (!glfwWindowShouldClose(window) && !terminate) {
     // Poll and handle events (inputs, window resize, etc.)
     glfwPollEvents();
     if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {

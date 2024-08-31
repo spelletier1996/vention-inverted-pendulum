@@ -5,6 +5,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <cmath>
+#include <cstdio>
 
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>
@@ -35,6 +36,11 @@ inline auto GlfwInit() -> GLFWwindow * {
     return nullptr;
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
+
+  // Set callback for the x button to close window
+  glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+  });
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
