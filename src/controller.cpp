@@ -23,32 +23,32 @@ void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 int main() {
   signal(SIGINT, SignalHandler);
   // Set initial conditions
-  utils::SimState state{0, 0, 0, 0};
-  utils::SimCommand command{0, 0, false};
-  utils::ControllerSettings settings{default_position_Kp, default_position_Ki,
-                                     default_position_Kd, default_angle_Kp,
-                                     default_angle_Ki,    default_angle_Kd};
+  network::SimState state{0, 0, 0, 0};
+  network::SimCommand command{0, 0, false};
+  network::ControllerSettings settings{default_position_Kp, default_position_Ki,
+                                       default_position_Kd, default_angle_Kp,
+                                       default_angle_Ki,    default_angle_Kd};
   // Create the controllers with initial conditions
-  auto angle_controller = std::make_shared<utils::PID>(
+  auto angle_controller = std::make_shared<controller::PID>(
       default_angle_Kp, default_angle_Ki, default_angle_Kd);
-  auto position_controller = std::make_shared<utils::PID>(
+  auto position_controller = std::make_shared<controller::PID>(
       default_position_Kp, default_position_Ki, default_position_Kd);
 
   // Create the shared memory objects for communication with the HMI and
   // Simulation
-  utils::Server<utils::SimState> state_server("sim_state");
-  utils::Server<utils::SimCommand> command_server("sim_command");
-  utils::Server<utils::ControllerSettings> settings_server(
+  network::Server<network::SimState> state_server("sim_state");
+  network::Server<network::SimCommand> command_server("sim_command");
+  network::Server<network::ControllerSettings> settings_server(
       "controller_settings");
-  utils::Server<bool> reset("reset_signal");
+  network::Server<bool> reset("reset_signal");
 
   // Write config to shared memory
   settings_server.Write(settings);
 
   printf("\nStarting controller\n");
 
+  // Main loop
   while (!terminate) {
-    auto start = std::chrono::high_resolution_clock::now();
     // Check for reset signal and reset the controller
     if (reset.Read()) {
       printf("\nResetting controller\n");
@@ -103,10 +103,6 @@ int main() {
     command_server.Write(command);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    printf("\rController loop time: %ld ms", elapsed.count());
   }
   printf("\nExiting controller\n");
   return 0;

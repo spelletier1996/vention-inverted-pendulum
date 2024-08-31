@@ -14,31 +14,30 @@ void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 int main() {
   signal(SIGINT, SignalHandler);
   // Create local objects to store shared memory
-  utils::SimState state;
-  utils::SimCommand command;
+  network::SimState state;
+  network::SimCommand command;
 
   // Setup sim with default initial conditions
   const double p_0 = 0;
   const double theta_0 = 5;
   Eigen::VectorXd x_0(4);
   x_0 << p_0, tools::DegToRad(theta_0), 0, 0;
-  InvertedPendulum simulator(x_0);
+  model::InvertedPendulum simulator(x_0);
 
   // Create a PID controller to control the velocity
-  utils::PID velocity_controller(10, 1, 0);
+  controller::PID velocity_controller(10, 1, 0);
 
   // Open the controllers shared memory objects
-  utils::Client<utils::SimState> state_server("sim_state");
-  utils::Client<utils::SimCommand> command_server("sim_command");
-  utils::Client<bool> reset("reset_signal");
+  network::Client<network::SimState> state_server("sim_state");
+  network::Client<network::SimCommand> command_server("sim_command");
+  network::Client<bool> reset("reset_signal");
 
   // Create local variables
   double present_velocity = 0;
   double force_input = 0;
 
   while (!terminate) {
-    auto start = std::chrono::high_resolution_clock::now();
-    //Reset the sim and all related variables
+    // Reset the sim and all related variables
     if (reset.Read()) {
       printf("\nResetting Simulator\n");
       simulator.Restart();
@@ -50,7 +49,7 @@ int main() {
       force_input = 0;
       velocity_controller.Reset();
       state_server.Write(state);
-      //small delay to sync with controller
+      // small delay to sync with controller
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
@@ -65,7 +64,7 @@ int main() {
     force_input = velocity_controller.TotalError();
     simulator.Update(.001, force_input, command.disturbance);
 
-    //Limit the position for simplicity
+    // Limit the position for simplicity
     if (simulator.State()(0) > 10) {
       simulator.Position(10);
     } else if (simulator.State()(0) < -10) {
@@ -81,9 +80,6 @@ int main() {
 
     // Run the sim at 1000hz
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    printf("\rSim loop time: %ld ms", elapsed.count());
   }
 
   printf("\nExiting sim\n");

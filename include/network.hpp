@@ -11,7 +11,7 @@
 #include <string>
 #include <thread>
 
-namespace utils {
+namespace network {
 
 //! Data structures for convinient interprocess communication
 struct SimState {
@@ -146,6 +146,6 @@ public:
   }
 };
 
-} // namespace utils
+} // namespace network
 
 #endif // INCLUDE_NETWORK_HPP

@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 
+namespace model {
 class InvertedPendulum {
 public:
   //!
@@ -57,6 +58,9 @@ public:
   //!
   auto Position(double position) { x_(0) = position; }
 
+  //!
+  //!@brief Restart the sim setting state to zero
+  //!
   void Restart() {
     x_.setZero();
     Restart(x_);
@@ -83,5 +87,7 @@ private:
       x_; // state vector (position, angle, velocity, angular velocity)
   Eigen::VectorXd x_dot_; // state vector derivative
 };
+
+} // namespace model
 
 #endif // SRC_INVERTED_PENDULUM_HPP

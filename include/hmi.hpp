@@ -61,7 +61,7 @@ inline auto GlfwInit() -> GLFWwindow * {
 //!@param y_offset offset from the y center in pixels
 //!
 inline void draw_pendulum(double cart_position, double pendulum_angle,
-                   float y_offset = 0) {
+                          float y_offset = 0) {
   const ImU32 col = ImColor(255, 50, 0, 255);
 
   ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -101,4 +101,4 @@ inline void draw_pendulum(double cart_position, double pendulum_angle,
 
 } // namespace hmi
 
-#endif  // INCLUDE_HMI_HPP
+#endif // INCLUDE_HMI_HPP

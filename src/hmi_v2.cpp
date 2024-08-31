@@ -15,16 +15,16 @@ void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
 int main() {
   signal(SIGINT, SignalHandler);
   // Create local objects to store shared memory
-  utils::SimState state;
-  utils::SimCommand command;
-  utils::ControllerSettings settings;
+  network::SimState state;
+  network::SimCommand command;
+  network::ControllerSettings settings;
 
   // Open the controllers shared memory objects
-  utils::Client<utils::SimState> state_server("sim_state");
-  utils::Client<utils::SimCommand> command_server("sim_command");
-  utils::Client<utils::ControllerSettings> settings_server(
+  network::Client<network::SimState> state_server("sim_state");
+  network::Client<network::SimCommand> command_server("sim_command");
+  network::Client<network::ControllerSettings> settings_server(
       "controller_settings");
-  utils::Client<bool> reset("reset_signal");
+  network::Client<bool> reset("reset_signal");
 
   GLFWwindow *window = hmi::GlfwInit();
 
@@ -93,13 +93,11 @@ int main() {
     if (std::abs(state.position) > ((track_width / 2) - 0.1)) {
       ImU32 colour = ImColor(255, 50, 50, 255);
       ImGui::PushStyleColor(ImGuiCol_Button, colour);
-      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
       ImGui::Button("Position Warning");
 
     } else {
       ImU32 colour = ImColor(140, 200, 80, 200);
       ImGui::PushStyleColor(ImGuiCol_Button, colour);
-      // ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, 255));
       ImGui::Button("Position Good");
     }
     ImGui::PopStyleColor(1);

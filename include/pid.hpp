@@ -1,7 +1,7 @@
 #ifndef INCLUDE_PID_HPP
 #define INCLUDE_PID_HPP
 
-namespace utils {
+namespace controller {
 
 class PID {
 public:
@@ -70,6 +70,6 @@ private:
   double Kd_{0.0}; // Derivative gain
 };
 
-} // namespace utils
+} // namespace controller
 
 #endif // INCLUDE_PID_HPP
