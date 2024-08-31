@@ -130,6 +130,7 @@ int main() {
     double saved_disturbance = command.disturbance;
     command = command_server.Read();
     command.disturbance = saved_disturbance;
+    command_server.Write(command);
   }
 
   // Cleanup
