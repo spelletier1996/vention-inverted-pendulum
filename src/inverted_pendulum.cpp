@@ -6,8 +6,8 @@ void InvertedPendulum::Update(const double &dt, const double &cart_force,
   double theta = x_(1);            // angle of the pendulum
   double vx = x_(2);               // velocity of the base
   double omega = x_(3);            // angular rate of the pendulum
-  double d = pendulum_disturbance; // disturbance TODO: add to params
-  double u = cart_force; // force applied to the base TODO: add to params
+  double d = pendulum_disturbance; // disturbance 
+  double u = cart_force; // force applied to the base 
 
   // Compute common terms
   double s_t = std::sin(theta);
