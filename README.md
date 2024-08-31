@@ -35,7 +35,7 @@ First ensure that the container has display access:
 
 ``` xhost +local:* ```
 
-then all three process including hmi v2 can be launched:
+then all three process including hmi v1 can be launched:
 
 ```docker compose up```
 
@@ -43,7 +43,7 @@ Alternatively individual processes can be launched:
 
 ``` docker build -t pendulum . ```
 
-``` docker run -it --ipc=host -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/shm:/dev/shm -e DISPLAY=$DISPLAY pendulum bash -c "./build/controller" ```
+``` docker run -it --ipc=host -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/shm:/dev/shm -e DISPLAY=$DISPLAY pendulum bash -c "./build/hmi_v2" ```
 
 ### Native
 ##### Building
