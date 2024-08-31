@@ -8,10 +8,4 @@ RUN apt-get install -y libeigen3-dev
 
 COPY . /
 
-RUN mkdir build
-
-WORKDIR /build
-
-RUN cmake ..
-
-RUN make
+RUN ./scripts/build_compile.sh

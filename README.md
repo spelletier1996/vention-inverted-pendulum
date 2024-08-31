@@ -4,6 +4,8 @@ This is my attempt at solving the vention inverted pendulum take home exam
 
 The solution is split into three seperate executables to somewhat emulate a real world scenerio. The simulation is taking the place of real world hardware, the controller is running on a seperate device and the HMI is independent from the controller allowing it to be updated while maintaining stability.
 
+There are two HMI versions V1 and V2, As project requirements were updated after the initial version a second version with added controls and warnings was implemented.
+
 Further requirements and design decisions can be reviewed in ```docs/design```
 
 ### Dependencies
@@ -23,9 +25,19 @@ Dependencies can be installed using
 ### Docker
 With the use of docker and docker compose the entire system can be run containerized with:
 
+First ensure that the container has display access:
+
+``` xhost +local:* ```
+
+then all three process including hmi v2 can be launched:
+
 ```docker compose up```
 
-This will launch the entire system including V2 of the HMI
+Alternatively individual processes can be launched:
+
+``` docker build -t pendulum . ```
+
+``` docker run -it --ipc=host -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/shm:/dev/shm -e DISPLAY=$DISPLAY pendulum bash -c "./build/controller" ```
 
 ### Native
 ##### Building

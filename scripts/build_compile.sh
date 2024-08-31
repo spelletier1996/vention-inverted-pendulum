@@ -5,7 +5,7 @@ if [[ -d build ]]; then
     rm -rf build
 fi
 
-mkdir local_build
-cd local_build
+mkdir build
+cd build
 cmake ..
 make

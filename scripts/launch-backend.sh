@@ -11,6 +11,6 @@ execute_exe() {
 
 # Launch the simulator and controller in parallel
 
-execute_exe "./local_build/controller"
+execute_exe "./build/controller"
 wait 1
-execute_exe "./local_build/simulator"
+execute_exe "./build/simulator"

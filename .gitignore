@@ -1,6 +1,5 @@
 # Folders
 build/*
-local_build/*
 .cache/*
 
 # Prerequisites

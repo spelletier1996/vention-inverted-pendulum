@@ -11,4 +11,4 @@ execute_exe() {
 
 # Launch the simulator and controller in parallel
 
-execute_exe "./local_build/hmi_v2"
+execute_exe "./build/hmi_v2"
