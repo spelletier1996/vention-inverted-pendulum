@@ -2,7 +2,7 @@
 ### Introduction
 This is my attempt at solving the vention inverted pendulum take home exam
 
-The solution is split into three seperate executables to somewhat emulate a real world scenerio. The simulation is taking the place of real world hardware, the controller is running on a seperate device and the HMI is independent from the controller allowing it to be updated while maintaining stability.
+The solution is split into three seperate executables to somewhat emulate a real world scenerio. The simulation is taking the place of real world hardware (Actuator), the controller is running on a seperate device (MachineMotion) and the HMI is running a simple front end displayed on a pendant.
 
 There are two HMI versions V1 and V2, As project requirements were updated after the initial version a second version with added controls and warnings was implemented.
 
