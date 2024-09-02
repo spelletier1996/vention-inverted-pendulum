@@ -1,3 +1,5 @@
+# Design Notes
+
 ### Assumptions 
 - Status of the turbine is equated to status of the pendulum
 
@@ -18,15 +20,86 @@ Simulation of an inverted pendulum with with IPC @100hz interface for Vx, Angle,
 
 Feedback controller to keep upright (and bring position to 0)
 
-Simple GUI that allows visuilization of the state of the turbine and allows for changing gain params of controller
+Simple GUI that allows visualization of the state of the turbine and allows for changing gain params of controller
 
-### Questions
+Program structure options:
+1. Three seperate processes (emulate seperate computers)
+2. Two processes (Seperate HMI and controller + Sim threaded)
+3. Single processes multiple threads?
 
-- What IPC will we use
-- What GUI library
-- ...
+Option 1 in this case seems the most correct, it allows for emulation of a real system where the sim is taking the place of hardware, 
+the controller is running on the primary computational unit (MachineMotion in the case of vention), and then the HMI is simply a swappable front-end 
+running on a handheld tablet or maybe on the controller itself.
 
-##### Notes
+### Medium Level
+
+With a basic structure the medium level considerations need to be thought through
+
+##### Network Structure
+We will be communication between three separate processes how will this be structured?
+As the HMI and simulation are going to be swappable, it seems correct to have the controller be the "server" and a source of truth for settings
+and the current state of the sim
+
+We can have the sim/hardware push data to the controller and the controller then push control data (Vx) to the simulator/hardware
+
+The HMI would then simply read the state and control settings directly from the controller as a source of truth and could modify the controller settings as needed
+
+State and controller settings cant be stored in the HMI itself as it might be disabled when running independently or when being updated
+
+This structure leads to the sim and hmi being dependent on the controller as the common element but the controller being independent of them
+
+##### Simulation 
+
+The sim approach can be done in a few ways
+- using a physics library/engine (ex: game engine) to directly model the pendulum 
+- modeling the pendulum in matlab and extracting the equations of motion
+- deriving the equations of motion directly
+- using existing equations
+
+The method chosen was motivated by simplicity, taking an existing set of equations of motion and modifying them with the addition of disturbance D
+
+The design final solution given a real world situation would likely be proper modeling of the system in matlab to allow for advanced controller design. 
+
+The equations of motion can easily be used to model the system by taking their derivatives, and integrating them over a timestep dt. In this case I chose 1000hz to allow for a higher frequency then the controller modeling a real world situation
+
+The equations of motion describe input as a force U but the client wants input Vx and this more closely models an actuator that would not generally be effort controlled
+
+To solve this we can implement a simple velocity control PID loop inside the sim itself emulating the control loop of a smart actuator that itself would take in position, velocity ect...
+
+Finally in terms of testing with a disturbance generally the method in reality would be a physical input as that's the not the case here a simple disturbance input is available for testing
+
+##### Controller 
+
+The controller design can be approached in multiple ways.
+
+Ideally we use the equations of motion and then develop the controller with references to existing designs in well established papers using matlab or another controller design tool.
+
+control methods include P, PI, PID, PID+feedforward, LQR ect... 
+
+In this case for simplicity I implemented a dual multivariable PID controller that combines a controller for angle of the arm and position X of the cart. 
+
+Ideally according to the papers I reviewed linked bellow, a LQR design may be ideal as it is better suited to multi variable input with single control output
+
+### Low Level
+
+##### IPC Selection
+
+There are many IPC approaches that this network can take
+- SharedMemory
+- TCP
+- UDP
+- linux pipes, queues, ect...
+- hardware emulation (VCAN)
+
+I believe that in a design final product that the proper approach would be using a TCP/IP based connection between the controller and HMI and then a CAN based connection between the controller and Sim. 
+
+This would best emulate the real world hardware. CAN would use a CANOpen protocol and the HMI could potentially use either a simple Push/Pull system or a REST api
+
+I chose to implement a Shared memory approach that attempts to emulate a server client system. 
+
+In terms of single computer communication shared memory is fast, efficient and reliable but would of course not easily allow inter-computer communication without some sort of middle-ware.
+
+# Messy Notes for private use 
 
 The simulation can be approached in a few different ways from directly diriving the equations of motion ourselves to using an existing simulator online
 I feel that the ideal solution here would be to model the system in matlab and then extract the plant from their but I dont currenly have access nor the time to do so. The alternative is to find an existing model that we can borrow
