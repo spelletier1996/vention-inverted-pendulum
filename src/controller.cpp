@@ -1,4 +1,5 @@
 #include "pid.hpp"
+#include "tools.hpp"
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -7,6 +8,7 @@
 #include <stdio.h>
 #include <thread>
 #include <unistd.h>
+#include <zmq.hpp>
 
 bool terminate = false;
 
@@ -42,6 +44,13 @@ int main() {
       "controller_settings");
   network::Server<bool> reset("reset_signal");
 
+  // Create a ZMQ context and socket to communicate with the hmi
+  zmq::context_t ctx(5);
+  zmq::socket_t sock(ctx, zmq::socket_type::push);
+  zmq::socket_t sock_sub(ctx, zmq::socket_type::pull);
+  sock_sub.connect("tcp://127.0.0.1:5000");
+  sock.bind("tcp://127.0.0.1:5000");
+
   // Write config to shared memory
   settings_server.Write(settings);
 
@@ -49,6 +58,19 @@ int main() {
 
   // Main loop
   while (!terminate) {
+    auto serial = tools::Serialize(std::vector{settings});
+    zmq::message_t msg{serial.begin(), serial.end()};
+    auto res = sock.send(msg, zmq::send_flags::none);
+    if (res.has_value()) {
+      printf("Sent message\n");
+    }
+    zmq::message_t message(sizeof(network::ControllerSettings));
+    auto res_sub = sock_sub.recv(message, zmq::recv_flags::dontwait);
+    auto iptr = message.data<network::ControllerSettings>();
+    if (res_sub.has_value()) {
+      printf("Received message: %f\n", iptr->angle_Kd);
+    }
+
     // Check for reset signal and reset the controller
     if (reset.Read()) {
       printf("\nResetting controller\n");
@@ -104,6 +126,9 @@ int main() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
+  sock.unbind("tcp://127.0.0.1:5000");
+  sock_sub.disconnect("tcp://127.0.0.1:5000");
+  zmq_ctx_destroy(&ctx);
   printf("\nExiting controller\n");
   return 0;
 }

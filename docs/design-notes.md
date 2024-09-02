@@ -122,3 +122,6 @@ dθ_dot/dt = (-m * g * sin(θ) - m * x_ddot * cos(θ) + D) / (m * l)
       (-m_ * l_2 * s_t * c_t * o_2 + M_t_ * g_ * l_ * s_t - c_ * l_ * c_t * vx -
        gamma_ * (M_t_ / m_) * omega + l_ * c_t * u) /
       (J_t_ * (M_t_ / m_) - m_ * (l_ * c_t) * (l_ * c_t));
+
+todo:
+fix backend script

@@ -2,7 +2,7 @@
 #include <network.hpp>
 #include <signal.h>
 #include <stdio.h>
-
+#include <zmq.hpp>
 #include "hmi.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -37,8 +37,19 @@ int main() {
   settings = settings_server.Read();
   float track_width = 5.0f;
 
+  // Create a ZMQ context and socket to communicate with the hmi
+  zmq::context_t ctx;
+  zmq::socket_t sock(ctx, zmq::socket_type::sub);
+  sock.connect("tcp://127.0.0.1:5000");
+
   // Main loop
   while (!glfwWindowShouldClose(window) && !terminate) {
+    zmq::message_t message(12);
+    auto res = sock.recv(message, zmq::recv_flags::dontwait);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    if (res.has_value()) {
+      printf("Received message: %s\n", message.to_string().c_str());
+    }
     // Poll and handle events (inputs, window resize, etc.)
     glfwPollEvents();
     if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {
@@ -175,6 +186,9 @@ int main() {
     command.disturbance = saved_disturbance;
     command_server.Write(command);
   }
+
+  sock.disconnect("tcp://127.0.0.1:5000");
+  zmq_ctx_destroy(&ctx);
 
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
