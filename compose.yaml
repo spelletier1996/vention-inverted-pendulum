@@ -2,7 +2,7 @@ services:
   controller:
     build:
       context: .
-    command: bash -c /build/controller  # Replace with your desired command
+    command: bash -c /build/controller  
     tty: true
     ipc: host
     volumes:
@@ -13,7 +13,7 @@ services:
   simulator:
     build:
       context: .
-    command: bash -c /build/simulator  # Replace with your desired command
+    command: bash -c /build/simulator  
     tty: true
     ipc: host
     volumes:
@@ -26,7 +26,7 @@ services:
   hmi:
     build:
       context: .
-    command: bash -c /build/hmi_v1  # Replace with your desired command
+    command: bash -c /build/hmi_v1 
     tty: true
     ipc: host
     volumes:
