@@ -67,8 +67,6 @@ The imgui setup code (hmi.hpp GlfwInit) was taked from examples.
 
 The inverted_pendulum.cpp was based on an existing project found [here](https://github.com/jasleon/Inverted-Pendulum) with the equations being modified and the overall code being updated to meet more modern C++ standards. 
 
-The controller code was also originally based on the above project updated to modern standards.
-
 ### Future Potential Updates
 - Tests and ideally a ci/cd pipeline with linting and static analysis
 - Alternative controller implementations (LQR)
