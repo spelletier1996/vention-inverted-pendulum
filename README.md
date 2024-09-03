@@ -70,5 +70,6 @@ The inverted_pendulum.cpp was based on an existing project found [here](https://
 ### Future Potential Updates
 - Tests and ideally a ci/cd pipeline with linting and static analysis
 - Alternative controller implementations (LQR)
-- Socket based communication between the Sim and Controller
+- Socket (TCP/ip) based communication between the controller and HMI
+- Mock CAN bus (Vcan) communication between the controller and sim
 - Expanding HMI functionality and usability
