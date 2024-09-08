@@ -45,6 +45,11 @@ target_link_libraries(hmi_v2 Boost::boost imgui_glfw Eigen3::Eigen)
 target_include_directories(hmi_v2 PUBLIC ${${PROJECT}_INCLUDE_DIR})
 install(TARGETS hmi_v2 DESTINATION bin)
 
+add_executable(tcp_test ${${PROJECT}_SOURCE_DIR}/tcp.cpp)
+target_link_libraries(tcp_test Boost::boost)
+target_include_directories(tcp_test PUBLIC ${${PROJECT}_INCLUDE_DIR})
+install(TARGETS tcp_test DESTINATION bin)
+
 
 
 
