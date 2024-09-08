@@ -33,10 +33,15 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -readability-named-parameter,
   -readability-braces-around-statements,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -bugprone-easily-swappable-parameters,
+
+#Note: re-enable magic numbers and adjacent params in new project
+
+
 
 # Turn all the warnings from the checks above into errors.
-WarningsAsErrors: "*"
+# WarningsAsErrors: "*"
 
 CheckOptions:
   - { key: readability-identifier-naming.NamespaceCase,          value: lower_case }

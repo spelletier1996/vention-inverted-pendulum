@@ -46,9 +46,9 @@ inline auto GlfwInit() -> GLFWwindow* {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO();
-  (void)io;
-  io.ConfigFlags |=
+  ImGuiIO& imgui_io = ImGui::GetIO();
+  (void)imgui_io;
+  imgui_io.ConfigFlags |=
       ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
   // Setup Dear ImGui style

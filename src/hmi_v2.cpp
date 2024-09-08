@@ -75,8 +75,9 @@ auto main() -> int {
     // Draw the pendulum animation
     ImVec2 window_size = ImGui::GetWindowSize();
     float scaled_position =
-        ((state.position + 10) / 20 * window_size.x) - window_size.x / 2;
-    hmi::DrawPendulum(scaled_position, state.angle, 100);
+        ((static_cast<float>(state.position) + 10) / 20 * window_size.x) -
+        window_size.x / 2;
+    hmi::DrawPendulum(scaled_position, static_cast<float>(state.angle), 100);
 
     // Publish the state variables
     ImGui::Value("Position", static_cast<float>(state.position));
@@ -128,8 +129,6 @@ auto main() -> int {
         ImGui::EndTabItem();
       }
       if (ImGui::BeginTabItem("PID Settings")) {
-
-        ImGui::Text("Controller options coming soon...");
 
         /// V2
         ImGui::PushItemWidth(80.0F);

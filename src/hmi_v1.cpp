@@ -1,6 +1,6 @@
+#include <cmath>
 #include <csignal>
 #include <cstdio>
-#include <cmath>
 #include <network.hpp>
 
 #include "hmi.hpp"
@@ -14,7 +14,7 @@ void SignalHandler([[maybe_unused]] int sig) {
   terminate = true;
 }
 
-int main() {
+auto main() -> int {
   signal(SIGINT, SignalHandler);
   // Create local objects to store shared memory
   network::SimState state;
@@ -74,8 +74,9 @@ int main() {
     // Draw the pendulum animation
     ImVec2 window_size = ImGui::GetWindowSize();
     float scaled_position =
-        ((state.position + 10) / 20 * window_size.x) - window_size.x / 2;
-    hmi::DrawPendulum(scaled_position, state.angle, 100);
+        ((static_cast<float>(state.position) + 10) / 20 * window_size.x) -
+        window_size.x / 2;
+    hmi::DrawPendulum(scaled_position, static_cast<float>(state.angle), 100);
 
     // Publish the state variables
     ImGui::Value("Position", static_cast<float>(state.position));

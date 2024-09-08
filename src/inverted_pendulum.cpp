@@ -1,6 +1,7 @@
 #include "inverted_pendulum.hpp"
 
-void model::InvertedPendulum::Update(const double& dt, const double& cart_force,
+void model::InvertedPendulum::Update(const double& time_step,
+                                     const double& cart_force,
                                      const double& pendulum_disturbance) {
   // Recover state parameters
   double theta = x_(1);                       // angle of the pendulum
@@ -31,5 +32,5 @@ void model::InvertedPendulum::Update(const double& dt, const double& cart_force,
               (J_t_ * (M_t_ / m_) - m_ * (l_ * cos_theta) * (l_ * cos_theta));
 
   // Apply Euler method to solve differential equations
-  x_ += x_dot_ * dt;
+  x_ += x_dot_ * time_step;
 }
