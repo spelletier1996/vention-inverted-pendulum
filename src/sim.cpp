@@ -1,17 +1,19 @@
+#include <chrono>
+#include <csignal>
+#include <cstdio>
+#include <network.hpp>
+#include <thread>
 #include "inverted_pendulum.hpp"
 #include "pid.hpp"
 #include "tools.hpp"
-#include <chrono>
-#include <network.hpp>
-#include <signal.h>
-#include <stdio.h>
-#include <thread>
 
 bool terminate = false;
 
-void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
+void SignalHandler([[maybe_unused]] int sig) {
+  terminate = true;
+}
 
-int main() {
+auto main() -> int {
   signal(SIGINT, SignalHandler);
   // Create local objects to store shared memory
   network::SimState state;

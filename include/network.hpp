@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <utility>
 
 namespace network {
 
@@ -41,9 +42,10 @@ struct ControllerSettings {
 //! Thread safe
 //!@tparam T Data type to be shared
 //!
-template <typename T> class SharedMemory {
-public:
-  SharedMemory(std::string name) : name_(name){};
+template <typename T>
+class SharedMemory {
+ public:
+  explicit SharedMemory(std::string name) : name_(std::move(name)){};
 
   //!
   //!@brief Init the memory and map objects
@@ -66,7 +68,7 @@ public:
   auto Read() -> T {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(
         *this->mutex_.get());
-    return *static_cast<T *>(this->mapped_region_->get_address());
+    return *static_cast<T*>(this->mapped_region_->get_address());
   }
 
   //!
@@ -74,13 +76,13 @@ public:
   //! thread safe
   //!@param data
   //!
-  void Write(const T &data) {
+  void Write(const T& data) {
     boost::interprocess::scoped_lock<boost::interprocess::named_mutex> lock(
         *this->mutex_.get());
-    *static_cast<T *>(this->mapped_region_->get_address()) = data;
+    *static_cast<T*>(this->mapped_region_->get_address()) = data;
   }
 
-protected:
+ protected:
   std::unique_ptr<boost::interprocess::shared_memory_object>
       shared_memory_object_;
   std::unique_ptr<boost::interprocess::mapped_region> mapped_region_;
@@ -88,9 +90,10 @@ protected:
   std::string name_;
 };
 
-template <typename T> class Server : public SharedMemory<T> {
-public:
-  Server(std::string name) : SharedMemory<T>(name) {
+template <typename T>
+class Server : public SharedMemory<T> {
+ public:
+  explicit Server(std::string name) : SharedMemory<T>(name) {
     // Remove existing objects as per boost docs
     boost::interprocess::shared_memory_object::remove(name.c_str());
     boost::interprocess::named_mutex::remove(name.c_str());
@@ -119,9 +122,10 @@ public:
   }
 };
 
-template <typename T> class Client : public SharedMemory<T> {
-public:
-  Client(std::string name) : SharedMemory<T>(name) {
+template <typename T>
+class Client : public SharedMemory<T> {
+ public:
+  explicit Client(std::string name) : SharedMemory<T>(name) {
     // Attempt to open the shared memory object
     int max_retries = 5;
     int retry_delay = 500;
@@ -134,7 +138,7 @@ public:
                     boost::interprocess::read_write)),
             std::move(std::make_unique<boost::interprocess::named_mutex>(
                 boost::interprocess::open_only, name.c_str())));
-      } catch (const boost::interprocess::interprocess_exception &e) {
+      } catch (const boost::interprocess::interprocess_exception& e) {
         printf("Failed to open shared memory object: %s\n", e.what());
         std::this_thread::sleep_for(std::chrono::milliseconds(retry_delay));
       }
@@ -146,6 +150,6 @@ public:
   }
 };
 
-} // namespace network
+}  // namespace network
 
-#endif // INCLUDE_NETWORK_HPP
+#endif  // INCLUDE_NETWORK_HPP

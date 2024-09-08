@@ -1,38 +1,39 @@
-#include "pid.hpp"
+#include <unistd.h>
 #include <chrono>
-#include <iostream>
+#include <csignal>
+#include <cstdio>
 #include <memory>
 #include <network.hpp>
-#include <signal.h>
-#include <stdio.h>
 #include <thread>
-#include <unistd.h>
+#include "pid.hpp"
 
 bool terminate = false;
 
 // default gains for a stable system
-constexpr double default_position_Kp = 5;
-constexpr double default_position_Ki = 0;
-constexpr double default_position_Kd = 5;
-constexpr double default_angle_Kp = 50;
-constexpr double default_angle_Ki = 10;
-constexpr double default_angle_Kd = 20;
+constexpr double kDefaultPositionKp = 5;
+constexpr double kDefaultPositionKi = 0;
+constexpr double kDefaultPositionKd = 5;
+constexpr double kDefaultAngleKp = 50;
+constexpr double kDefaultAngleKi = 10;
+constexpr double kDefaultAngleKd = 20;
 
-void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
+void SignalHandler([[maybe_unused]] int sig) {
+  terminate = true;
+}
 
-int main() {
+auto main() -> int {
   signal(SIGINT, SignalHandler);
   // Set initial conditions
   network::SimState state{0, 0, 0, 0};
   network::SimCommand command{0, 0, false};
-  network::ControllerSettings settings{default_position_Kp, default_position_Ki,
-                                       default_position_Kd, default_angle_Kp,
-                                       default_angle_Ki,    default_angle_Kd};
+  network::ControllerSettings settings{kDefaultPositionKp, kDefaultPositionKi,
+                                       kDefaultPositionKd, kDefaultAngleKp,
+                                       kDefaultAngleKi,    kDefaultAngleKd};
   // Create the controllers with initial conditions
   auto angle_controller = std::make_shared<controller::PID>(
-      default_angle_Kp, default_angle_Ki, default_angle_Kd);
+      kDefaultAngleKp, kDefaultAngleKi, kDefaultAngleKd);
   auto position_controller = std::make_shared<controller::PID>(
-      default_position_Kp, default_position_Ki, default_position_Kd);
+      kDefaultPositionKp, kDefaultPositionKi, kDefaultPositionKd);
 
   // Create the shared memory objects for communication with the HMI and
   // Simulation
@@ -52,19 +53,19 @@ int main() {
     // Check for reset signal and reset the controller
     if (reset.Read()) {
       printf("\nResetting controller\n");
-      position_controller->Reset(default_position_Kp, default_position_Ki,
-                                 default_position_Kd);
-      angle_controller->Reset(default_angle_Kp, default_angle_Ki,
-                              default_angle_Kd);
+      position_controller->Reset(kDefaultPositionKp, kDefaultPositionKi,
+                                 kDefaultPositionKd);
+      angle_controller->Reset(kDefaultAngleKp, kDefaultAngleKi,
+                              kDefaultAngleKd);
       command.velocity = 0;
       command.disturbance = 0;
       command.reset = false;
-      settings.angle_Kp = default_angle_Kp;
-      settings.angle_Ki = default_angle_Ki;
-      settings.angle_Kd = default_angle_Kd;
-      settings.position_Kp = default_position_Kp;
-      settings.position_Ki = default_position_Ki;
-      settings.position_Kd = default_position_Kd;
+      settings.angle_Kp = kDefaultAngleKp;
+      settings.angle_Ki = kDefaultAngleKi;
+      settings.angle_Kd = kDefaultAngleKd;
+      settings.position_Kp = kDefaultPositionKp;
+      settings.position_Ki = kDefaultPositionKi;
+      settings.position_Kd = kDefaultPositionKd;
       state.position = 0;
       state.angle = 0;
       state.velocity = 0;

@@ -1,7 +1,7 @@
+#include <csignal>
+#include <cstdio>
 #include <cmath>
 #include <network.hpp>
-#include <signal.h>
-#include <stdio.h>
 
 #include "hmi.hpp"
 #include "imgui.h"
@@ -10,7 +10,9 @@
 
 bool terminate = false;
 
-void SignalHandler([[maybe_unused]] int sig) { terminate = true; }
+void SignalHandler([[maybe_unused]] int sig) {
+  terminate = true;
+}
 
 int main() {
   signal(SIGINT, SignalHandler);
@@ -26,18 +28,18 @@ int main() {
       "controller_settings");
   network::Client<bool> reset("reset_signal");
 
-  GLFWwindow *window = hmi::GlfwInit();
+  GLFWwindow* window = hmi::GlfwInit();
 
   if (window == nullptr) {
     printf("Failed to initialize GLFW\n");
     return 0;
   }
 
-  float disturbance = 0.0f;
+  float disturbance = 0.0F;
   settings = settings_server.Read();
 
   // Main loop
-  while (!glfwWindowShouldClose(window) && !terminate) {
+  while ((glfwWindowShouldClose(window) == 0) && !terminate) {
     // Poll and handle events (inputs, window resize, etc.)
     glfwPollEvents();
     if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {
@@ -55,25 +57,25 @@ int main() {
     ImGui::NewFrame();
 
     // Draw the primary HMI window
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_None;
 
-    const ImGuiViewport *viewport = ImGui::GetMainViewport();
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
     ImGui::SetNextWindowViewport(viewport->ID);
 
-    windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    windowFlags |=
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |=
         ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-    ImGui::Begin("simulation view", nullptr, windowFlags);
+    ImGui::Begin("simulation view", nullptr, window_flags);
 
     // Draw the pendulum animation
     ImVec2 window_size = ImGui::GetWindowSize();
-    double scaled_position =
+    float scaled_position =
         ((state.position + 10) / 20 * window_size.x) - window_size.x / 2;
-    hmi::draw_pendulum(scaled_position, state.angle, 100);
+    hmi::DrawPendulum(scaled_position, state.angle, 100);
 
     // Publish the state variables
     ImGui::Value("Position", static_cast<float>(state.position));
@@ -116,10 +118,11 @@ int main() {
 
     // Render the window drawn above
     ImGui::Render();
-    int display_w, display_h;
+    int display_w;
+    int display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 clear_color = ImVec4(0.45F, 0.55F, 0.60F, 1.00F);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w,
                  clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
