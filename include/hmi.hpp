@@ -25,15 +25,16 @@ inline auto GlfwInit() -> GLFWwindow* {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
   // Check if glfw was initialized
-  if (!glfwInit()) {
+  if (glfwInit() == 0) {
     return nullptr;
   }
 
   // Create window with graphics context
   GLFWwindow* window =
       glfwCreateWindow(400, 400, "Vention Inverted Pendulum", nullptr, nullptr);
-  if (window == nullptr)
+  if (window == nullptr) {
     return nullptr;
+  }
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);  // Enable vsync
 
