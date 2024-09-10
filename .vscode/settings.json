@@ -5,4 +5,10 @@
         "-compile-commands-dir=build"
     ],
     "editor.defaultFormatter": "xaver.clang-format",
+    "files.associations": {
+        "\"*.xacro\"": "\"xml\"",
+        "\"*.sdf\"": "\"xml\"",
+        "*.sdf": "xml",
+        "cmath": "cpp"
+    },
 }

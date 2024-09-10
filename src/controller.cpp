@@ -6,6 +6,7 @@
 #include <network.hpp>
 #include <thread>
 #include "pid.hpp"
+#include "typedefs.hpp"
 
 bool terminate = false;
 

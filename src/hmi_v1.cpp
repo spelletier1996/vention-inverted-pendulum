@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "tools.hpp"
+#include "typedefs.hpp"
 
 bool terminate = false;
 

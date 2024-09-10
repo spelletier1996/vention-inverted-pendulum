@@ -6,6 +6,7 @@
 #include "inverted_pendulum.hpp"
 #include "pid.hpp"
 #include "tools.hpp"
+#include "typedefs.hpp"
 
 bool terminate = false;
 
