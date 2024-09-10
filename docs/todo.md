@@ -1,0 +1,4 @@
+- change the typedefs namespace
+- database on controller for storing tcp server communication
+- finish basic tcp server API design and implimentation 
+- CAN and VCAN implementation
