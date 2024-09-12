@@ -1,10 +1,3 @@
-include(FetchContent)
-
-FetchContent_Populate(imgui
-  URL https://github.com/ocornut/imgui/archive/docking.zip
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui
-)
-
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 2 REQUIRED)
 find_package(glfw3 REQUIRED)

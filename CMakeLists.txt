@@ -6,7 +6,7 @@ project(vention-inverted-pendulum
 
 # Set compiler settings
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall -Wextra -Wpedantic -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra -Wpedantic -g -Debug")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 
@@ -16,6 +16,10 @@ find_package(Eigen3 REQUIRED)
 
 # Add imgui as a subdirectory
 add_subdirectory(imgui)
+
+#Add tests
+enable_testing() #this CANT be in the subdirectory for some reason?
+add_subdirectory(test)
 
 # Set include directory
 set(${PROJECT}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -44,7 +48,5 @@ add_executable(hmi_v2 ${${PROJECT}_SOURCE_DIR}/hmi_v2.cpp)
 target_link_libraries(hmi_v2 Boost::boost imgui_glfw Eigen3::Eigen)
 target_include_directories(hmi_v2 PUBLIC ${${PROJECT}_INCLUDE_DIR})
 install(TARGETS hmi_v2 DESTINATION bin)
-
-
 
 
