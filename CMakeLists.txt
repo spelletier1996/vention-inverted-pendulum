@@ -6,7 +6,7 @@ project(vention-inverted-pendulum
 
 # Set compiler settings
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall -Wextra -Wpedantic -g -Debug")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -Wall -Wextra -Wpedantic -g -Debug")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 
